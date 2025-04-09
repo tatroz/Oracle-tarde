@@ -1,0 +1,204 @@
+--SQL ORACLE 
+            --------FUNCIONES PROPIAS DE ORACLE(07)--------
+            -------VISUAL STUDIO CODE CON GITHUB------
+select * from EMP where LOWER(oficio)='analista';
+UPDATE EMP SET OFICIO='ANAlista' where emp_no=7902;
+
+--ESTAMOS PONIENDO LOS VALORES ESTATICOS: 'analista'
+--TAMBIEN PODRIAMOS INCLIR VALORES DINAMICOS, POR LO QUE TENDRIAMOS QUE
+--CONVERTIR LAS DOS COMPARACIONES
+
+select * from EMP where UPPER(OFICIO) = UPPER('&dato');
+
+--EN ORACLE TENEMOS LA POSIBILIDAD DE CONCATENAR TEXTOS EN UNA SOLA COLUMNA (CAMPO CALCULADO)
+--SE UTILIZA RL SIMBOLO  | | (ALT + GR1) PARA CONCATENAR
+--QUEREMOS MOSTRAR, EN UNA SOLA COLUMNA EL APELLIDO Y OFICIO DE LOS EMPLEADOS
+
+select APELLIDO || ' ' || OFICIO as DESCRIPCION from EMP;
+
+-- LA FUNCION INITCAP MUESTRA CADA PALABRA DE UNA FRASE CON LA PRIMERA LETRA EN MAYUSCULAS
+
+select INITCAP(OFICIO) as INITC from EMP;
+select initcap (APELLIDO || ' ' || OFICIO) as DESCRIPCION from EMP; --esto nos permite ver la primera letra en mayuscula y el reto en minuscula 
+
+                        --FUNCIONES DE CADENA--
+--tento el apellido como el oficio
+
+select concat('Nuestro empleado es... ', APELLIDO) as RESULTADO from EMP;
+
+--substr RECUPERA UNA SUBCADENA DE UN TEXTO
+
+select SUBSTR('FLORERO',1,4) as DATO from DUAL; --EL 1 INDICA QUE EMPEZAMOS POR LA PRIMERA LETRA QUE ES 'F'
+select SUBSTR('FLORERO',4) as DATO from DUAL; --DEVUELVE TODO A PARTIR DE LA CUARTA LETRA
+
+--MOSTRAR LOS EMPLEADOS CUYO APELLIDO EMPIEZA POR S
+
+select * from EMP where APELLIDO like 's%';
+select substr(APELLIDO, 1, 1) as UNAletra from EMP;
+select * from EMP where substr(APELLIDO, 1,1)='s';--substr es mas eficiente que el like
+--like SE UTILIZA SOBRE TODO PARA LA BUSQUEDA
+select length ('LIBRO') as LONGITUD from DUAL;
+
+--MOSTRAR LOS EMPLEADOS CUYO APELLIDO SEA DE 4 LETRAS
+
+select * from EMP where APELLIDO like '____';
+select * from EMP where length(APELLIDO)=4; --ES MEJOR USAR ESTA OPCION QUE like
+
+--instr BUSCA UN TEXTO Y DEVUELVE SU POSICION. DIFERENCIA MAYUSCULAS DE MINUSCULAS
+
+select INSTR('BENITO', 'N') as POSICION from DUAL;
+select INSTR('BENITO', 'NIP') as POSICION from DUAL; --Si INDICO ALGO QUE NO EXISTE ME DEVUELVE EL 0
+
+--SI SE REPITE DEVUELVE LA PRIMERA COINCIDENCIA QUE ENCUENTRE
+
+select instr('ORACLE MOLA', 'L') as POSICION from DUAL;
+
+--SI DESEAMOS VALIDAR UN MAIL
+
+select * from DUAL where instr('ma@il','@')>0;
+
+--LPAD and RPAD AJUSTA UNA CADENA DE CARACTERES A LA IZQUIERDA/DERECHA
+
+select LPAD(DEPT_NO,5, '$') from EMP;
+select RPAD(DEPT_NO,5, '$') from EMP;
+
+                --------FUNCIONES MATEMATICAS-----------
+
+select round(46.923) as REDONDEO from DUAL;
+select round(46.423) as REDONDEO from DUAL;
+select round(46.423, 2) as REDONDEO from DUAL; --REDOND. CON 2 DECIMALES
+select round(46.429, 2) as REDONDEO from DUAL;
+
+--trunc REDONDEA ELIMINANDO LOS DIGITOS INDICADOS
+
+select trunc(46.923) as REDONDEO from DUAL;
+select trunc(46.423) as REDONDEO from DUAL;
+select trunc(46.423, 2) as REDONDEO from DUAL;
+select trunc(46.429, 2) as REDONDEO from DUAL;
+
+--mod DEVUELVE EL RESTO DE LA DIVISION ENTRE DOS NUMEROS
+--AVERIGUAR SI EL NUMERO ES PAR
+
+select MOD(99, 2) as RESTO from DUAL;
+
+--MOSTRAR LOS EMPLEADOS CUYO SALARIO SEA PAR
+
+select * from EMP where MOD(SALARIO, 2) =0; --SALEN LOS SALARIOS PARES
+UPDATE EMP set SALARIO=SALARIO +1 where DEPT_NO=20;
+select * from EMP where MOD(SALARIO, 2) =1; --SALEN LOS SALARIOS IMPARES
+
+            -------FUNCIONES DE FECHAS-----------------
+
+--TENEMOS UNA FUNCION PARA AVERIGUAR LA FECHA ACTUAL DE HOY EN EL SERVIDOR
+--DICHA FUNCION ES: sysdate
+
+select SYSDATE  as FECHA_ACTUAL from DUAL;
+select SYSDATE+10 as fecha from DUAL; --suma el numero de dias;
+select SYSDATE+30 as fecha from DUAL; --suma el numero de dias;
+select SYSDATE-10 as fecha from DUAL; --resta 10 dias;
+
+--months_between MUESTRA CUANTOS MESES HAY ENTRE LA FECHA 1 Y LA FECHA 2
+--LA FECHA 1 DEBE SERMAYOR
+--MOSTRAR CUANTOS MESES LLEVAN LOS EMPLEADOS DADOS DE ALTE EN LA EMPRESA
+
+select APELLIDO, MONTHS_BETWEEN(SYSDATE, FECHA_ALT) as MESES from EMP;
+
+--AGREGAMOS A LA FECHA ACTUAL, 5 MESES
+
+select add_months(SYSDATE, 5) as DENTRO5 from DUAL;
+
+--next_day DEVUELVE LA FECHA DEL DIA SIGUIENTE A LA FECHA
+--EL PROXIMO DIA QUE LE INDIQUEMOS PARA LA FECHA
+--MOSTRAR CUANDO ES EL PROXIMO LUNES
+
+select next_day(SYSDATE, 'MONDAY') as PROXIMOLUNES from DUAL;
+select next_day(SYSDATE, 'TUESDAY') as PROXIMOMARTES from DUAL;
+select next_day(SYSDATE, 2) as PROXIMOMARTES from DUAL;
+
+--last_day DEVUELVE EL ÚLTIMO DIA DEL MES
+
+select LAST_DAY(SYSDATE) as FINMES from DUAL;
+
+--round REDONDEA LA FECHA SEGUN EL FORMATO
+--EMPLEADOS REDOANDEADOS LA FECHA AL MES
+
+select APELLIDO, FECHA_ALT, ROUND(FECHA_ALT, 'MM') as ROUNDMES from EMP;
+select APELLIDO, FECHA_ALT, ROUND(FECHA_ALT, 'YY') as ROUNYEAR from EMP;
+
+--trunc CORTA LA FECHA DEPENDIENDO DEL FORMATO
+
+select APELLIDO, FECHA_ALT, TRUNC(FECHA_ALT, 'MM') as TRUNCMES from EMP; --lo redondea a la baja
+select APELLIDO, FECHA_ALT, TRUNC(FECHA_ALT, 'YY') as TRUNCYEAR from EMP;
+
+--to_char PERMITE RECUPERAR LOS FORMATOS. PODEMOS DAR EL FORMATO A UNA FECHA O UN NUMERO
+--
+
+select APELLIDO, FECHA_ALT, TO_CHAR(FECHA_ALT, 'MM-DD-YYYY') as FORMATO from EMP;
+select APELLIDO, FECHA_ALT, TO_CHAR(FECHA_ALT, 'MM/DD/YYYY') as FORMATO from EMP;
+select TO_CHAR(SYSDATE, 'day MONTH w') as NOMBREMES from DUAL;
+
+--FORMATOS DE NUMEROS
+
+select to_char(7458, '0000L') as ZERO from DUAL;
+select to_char(7458, '0000$') as ZERO from DUAL;
+
+--HORA DEL SISTEMA
+
+select to_char(SYSDATE, 'HH24:MI:SS') as HORA_SISTEMA from DUAL;
+
+--SI DESEAMOS INCLUIR TEXTO ENTRE TO_CHAR Y LOS FORMATOS 
+--SE REALIZA CON "" DENTRO DE LAS SIMPLES ''
+
+select to_char(SYSDATE,'"Today is" DD "of" MONTH') as FORMATO from DUAL;
+select to_char(SYSDATE,'"Today is" DD "of" MONTH', 'nls_date_language =FRENCH') as FORMATO from DUAL;
+
+                --------------FUNCIONES DE CONVERSION (MUY IMPORTANTE)-------------
+
+--to_date
+
+select '08/04/2025' as FECHA from DUAL; --esto se interpreta como un texto
+select to_date('08/04/2025') as FECHA from DUAL; --aqui se considera como una fecha
+
+--to_number
+
+select '12' +2 as RESULTADO from DUAL;
+select to_number('12') + 2 as RESULTADO from DUAL; --ES MUY RECOMENDABLE USARLO CUANDO TENEMOS EL FORMATO TEXTO
+
+            ------------------FUNCIONES GENERALES (MUUUUY UTILES)------------------
+
+--NVL SIRVE PARA EVITAR LOS NULOS Y SUSTITUIR
+--SI ENCUENTRA UN NULO, LO SUSTITUYE, SINO, MUESTRA EL VALOR
+
+select * from EMP;
+--MOSTRAR APELLIDO, SALARIO Y COMISION DE TODOS LOS EMPLEADOS
+
+select APELLIDO, SALARIO, COMISION from EMP;
+--PODEMOS INDICAR QUE EN LUGAR DE PONER NULL, ESCRIBA OTRO VALOR
+--EL VALOR DEBE SER CORRESPONDIENTE AL TIPO DE DATO DE LA COLUMNA
+
+select APELLIDO, SALARIO, NVL(COMISION, 0) as COMISION from EMP;
+
+--mostrar apellido, salario + comision de todos los empleados
+
+select APELLIDO, SALARIO + COMISION as TOTAL from EMP; --TODO LO QUE ROZA UN NULL SE CONVIERTE EN UN NULL
+select APELLIDO, SALARIO + NVL(COMISION, 0) as TOTAL from EMP; --ES LA FORMA CORRECTA DE HACERLO
+
+--de_code es como case, pero propia de Oracle
+--MOSTRAR EL TURNO EN PALABRAS ('MAÑANA', 'TARDE', 'NOCHE') DE LA PLANTILLA
+
+select APELLIDO, TURNO from PLANTILLA;
+select APELLIDO, decode(TURNO, 'M', 'MAÑANA', 'N', 'NOCHE', 'TARDE') as TURNO from PLANTILLA;
+
+                    -----------FUNCIONES ANIDADAS-------------------------------
+
+--QUEIRO SABER LA FECHA DEL PROXIMO MIERCOLES 
+
+select next_day(SYSDATE, 'WEDNESDAY') as CHAMPIONS from DUAL;
+
+--QUIERO VER: EL MIERCOLES 11 DE ABRIL JUEGA EL MADRID
+
+select to_char(
+next_day(SYSDATE+2, 'WEDNESDAY'),
+'"EL DIA" day dd "JUEGA EL MADRID"') as CHAMPIONS from DUAL;
+
+--https://oracle411.moodlecloud.com/course/view.php?id=9   usuario2/ password Curso12345

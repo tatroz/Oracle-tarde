@@ -1,3 +1,4 @@
+
 --CUANDO SABEMOS EL INICIO Y EL FINAL
 
 DECLARE
@@ -25,7 +26,7 @@ end;
 --BUCLE PARA MOSTRAR LOS NUMEROS ENTRE 1 Y 10
 --1) BUCLE WHILE
 
-declare
+DECLARE
     i int;
 BEGIN
     i := 1;
@@ -170,6 +171,7 @@ undefine v_texto;
 --NECESITA MOSTRAR LA SUMA DE TODOS LOS CARACTERES NUMÉRICOS EN UN MENSAJE
 
 DECLARE
+
     v_texto_numero varchar2(50);
     v_long int;
     v_letra char(1);
@@ -183,7 +185,7 @@ BEGIN
 for i in 1..v_long loop
     v_letra := substr(v_texto_numero,i,1);
     --'1' --> 1
-    dbms_output.put_line(v_letra);
+    --dbms_output.put_line(v_letra);
     v_numero := to_number(v_letra);
     v_suma :=v_suma + v_numero;
 end loop;
@@ -192,3 +194,21 @@ end;
 
 --Dropbox talentodigitaloraclee@outlook.es/  Oracle12345_
 
+declare
+    v_texto_numero varchar2(50);
+    v_longitud int;
+    v_letra char(1);
+    v_numero int;
+    v_suma int;
+begin
+    v_suma := 0;
+    v_texto_numero := &texto;
+    v_longitud := length(v_texto_numero);
+    for i in 1..v_longitud loop
+        v_letra := substr(v_texto_numero, i, 1);
+        v_numero := to_number(v_letra);
+        v_suma := v_suma + v_numero;
+    end loop;
+    dbms_output.put_line('La suma de ' || v_texto_numero || ' es ' || v_suma);
+end;
+undefine texto;

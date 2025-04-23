@@ -270,13 +270,88 @@ select COUNT(SALARIO) from EMP WHERE SALARIO>250000;*/
 --Mostrar el número de filasque hemos modificado (subir o bajar)
 --Empleados con suerte: 6, Empleados más pobres:6
 
+----SOLUCION ERRONEA------
 DECLARE
-        v_salario 
-BEGIN
+        v_salario DOCTOR.SALARIO%TYPE;
+       -- v_hosp DOCTOR.HOSPITAL_COD%TYPE;
+        v_suma DOCTOR.SALARIO%TYPE;
+        v_id DOCTOR.DOCTOR_NO%TYPE;
+    
 
+BEGIN
+       select sum(SALARIO) into v_suma from DOCTOR
+       where  HOSPITAL_COD = 22;
+        select SALARIO into v_salario from DOCTOR; --no se puedo hacerlo porque estamos creando una variable y esto es solo aplicable para 1 sola persona.
+        select count(DOCTOR_NO) into v_id from DOCTOR
+        where DOCTOR_NO= v_id;
+        
+        --select COUNT(DOCTOR_NO) into v_id from DOCTOR;
+    if 
+        v_suma>1000000 then
+        v_salario := v_salario -10000
+        dbms_output.put_line ('Empleado más pobre: ' || v_id);
+    else
+        v_salario := v_salario +10000;
+    end if;
+        update DOCTOR set SALARIO=v_salario
+        where HOSPITAL_COD=v_id;
+    dbms_output.put_line ('Salario modificado: ' || );
 end
 
 
-select * from PLANTILLA;
+select * from DOCTOR;
 
-kkkk
+select * from HOSPITAL;
+--UNA FORMA DE HACERLO----
+declare
+        v_suma_salarial number; --al ser una variable que voy a calcular no puedo poner el tipo de una columna, porque me puede dar un error
+
+begin
+        /*select sum(DOCTOR.SALARIO) as SUMASALARIAL
+        from DOCTOR
+        inner join HOSPITAL
+        on DOCTOR.HOSPITAL_COD = HOSPITAL.HOSPITAL_COD
+        where lower(HOSPITAL.NOMRE) ='la paz'; --es como lo hariamosen INNER JOIN*/
+
+        select sum(DOCTOR.SALARIO) into v_suma_salarial
+        from DOCTOR
+        inner join HOSPITAL
+        on DOCTOR.HOSPITAL_COD = HOSPITAL.HOSPITAL_COD
+        where lower(HOSPITAL.NOMBRE) ='la paz';
+        dbms_output.put_line('Suma salarial la paz ' || v_suma_salarial); --con ello obtengo la suma salarial de todos losdoctores del hospital LA PAZ
+    if v_suma_salarial > 1000000 then
+        update DOCTOR set SALARIO =SALARIO -10000
+        where hospital_cod =
+        (select HOSPITAL_COD from HOSPITAL where UPPER(NOMBRE)='LA PAZ');
+        dbms_output.put_line ('Bajando salarios' || SQL%ROWCOUNT);
+    else 
+      
+        update DOCTOR set SALARIO =SALARIO +10000
+        where hospital_cod =
+        (select HOSPITAL_COD from HOSPITAL where UPPER(NOMBRE)='LA PAZ');
+        dbms_output.put_line (' Doctores ricos' || SQL%ROWCOUNT);
+    end if;
+end;
+
+--OTRA FORMA DE RESOLVERLO---
+
+DECLARE
+        v_suma_salarial number;
+        v_codigo HOSPITAL.HOSPITAL_COD%TYPE;
+
+BEGIN
+    select HOSPITAL_COD into v_codigo from HOSPITAL
+    where lower(NOMBRE) ='la paz';
+    select sum(SALARIO) into v_suma_salarial from DOCTOR
+        where HOSPITAL_COD = v_codigo;
+        dbms_output.put_line('Suma salarial la paz ' || v_suma_salarial);
+if v_suma_salarial > 1000000 then
+        update DOCTOR set SALARIO =SALARIO -10000
+        where hospital_cod = v_codigo;
+        dbms_output.put_line ('Bajando salarios' || SQL%ROWCOUNT);
+    else 
+        update DOCTOR set SALARIO =SALARIO +10000
+        where hospital_cod = v_codigo;
+        dbms_output.put_line (' Doctores ricos' || SQL%ROWCOUNT);
+    end if;
+END;

@@ -221,26 +221,28 @@ end;
 --Si el empleado cobra más de 250.000, le bajamos el sueldo en 10.000
 --Sino, le subimos el sueldo en 10.000
 
-DECLARE
+
+declare
     v_salario EMP.SALARIO%TYPE;
-    v_existe EMP.SALARIO%TYPE;
+    v_idemp EMP.EMP_NO%TYPE;
 BEGIN
-    v_salario := 250000;
-    SELECT SALARIO into v_existe from EMP
-    where SALARIO>v_salario;
-if  (v_existe = 0) then
-    dbms_output.put_line ('Subir en 10.000');
-    update EMP set SALARIO=SALARIO +10000;
-else
-    dbms_output.put_line ('Bajar en 10000');
-    update EMP set SALARIO=SALARIO-10000;
-    END IF;
+    SELECT EMP_NO, SALARIO into v_idemp,  v_salario from EMP
+    where UPPER(APELLIDO)='ARROYO';
+if  v_salario > 250000 then
+    v_salario := v_salario-10000; 
+else 
+    v_salario := v_salario +10000;
+END IF;
+    update EMP set SALARIO=v_salario
+    where EMP_NO=v_idemp;
+    dbms_output.put_line ('Salario modificado: ' || v_salario);
 end;
 
 
 
-DECLARE
+/*DECLARE
         v_salario emp.salario%type;
+        v_idemp EMP.EMP_NO%TYPE;
         v_existe emp.salario%type;
         cursor CURSOREMP IS
         SELECT SALARIO from EMP
@@ -260,6 +262,19 @@ BEGIN
         close CURSOREMP;
 end;
 
-select COUNT(SALARIO) from EMP WHERE SALARIO>250000;
+select COUNT(SALARIO) from EMP WHERE SALARIO>250000;*/
+
+--NECESITAMOS MODIFICAR EL SALARIO DE LOS DOCTORES DE LA PAZ
+--Si la suma salarial supera 1.000.000 bajamos salarios en 10.000 a todos
+--Si la suma salarial no supera el millón, subimos salarios en 10.000
+--Mostrar el número de filasque hemos modificado (subir o bajar)
+--Empleados con suerte: 6, Empleados más pobres:6
+
+DECLARE
+        v_salario 
+BEGIN
+
+end
 
 
+select * from PLANTILLA;

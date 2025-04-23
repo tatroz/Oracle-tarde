@@ -355,3 +355,77 @@ if v_suma_salarial > 1000000 then
         dbms_output.put_line (' Doctores ricos' || SQL%ROWCOUNT);
     end if;
 END;
+
+
+--------------------TEORIA-----------------------
+
+--ROWTYPE
+--REALIZAMOS LA DECLARACION CON DEPARTAMENTOS
+
+describe DEPT;
+
+declare
+        v_id number;
+
+begin
+        dbms_output.put_line ('El valor de v_id es' || v_id);
+end;
+
+
+declare
+        v_id DEPT.DEPT_NO%TYPE; --NUMBER(9)
+
+begin
+
+        dbms_output.put_line ('El valor de v_id es' || v_id);
+end;
+
+--CPODEMOS ALMACENAR TODOS LOS DEPARTAMENTOS (UNO A UNO) EN UN ROWTYPE
+declare
+        v_fila DEPT%ROWTYPE; 
+        
+
+begin
+        v_fila.DEPT_NO := NULL;
+        dbms_output.put_line ('El valor de v_id es' || v_fila.DEPT_NO);
+end;
+
+
+declare
+        v_fila DEPT%ROWTYPE;
+        cursor CURSOR_DEPT IS
+        select * from DEPT;
+
+begin
+       open cursor_dept;
+       loop
+            fetch cursor_dept into v_fila;
+            exit when cursor_dept%notfound;
+            dbms_output.put_line ('Id: ' || v_fila.DEPT_NO
+            || ', Nombre: ' || v_fila.DNOMBRE 
+            || ', Localidad: ' || v_fila.LOC);
+        end loop;
+       close cursor_dept;
+end;
+
+DESCRIBE dept;
+
+--REALIZAR UN CURSOR PARAMOSTRAR EL APELLIDO, SALARIO Y OFICIO DE EMPLEADOS
+
+/
+declare
+        cursor CURSOR_EMP IS
+        select apellido, salario, oficio,
+        salario+comision as total
+        from EMP;
+begin
+        for v_registro in cursor_emp --v_registro es una variable que invento
+        loop
+        dbms_output.put_line ('Apellido' || v_registro.apellido
+        || ', Salario ' || v_registro.salario
+        || ', Oficio ' || v_registro.oficio
+        ||', Total ' || v_registro.total);
+        end loop;
+end;
+
+/

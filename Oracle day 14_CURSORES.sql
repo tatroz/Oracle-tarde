@@ -193,27 +193,7 @@ end;
         --close CURSORDEPT;
 END;*/
 
-DECLARE
-        v_id DEPT.DEPT_NO%TYPE;
-        v_nombre DEPT.DNOMBRE%TYPE;
-        v_localidad DEPT.LOC%TYPE;
-        v_existe DEPT.DEPT_NO%TYPE;
-BEGIN
-        v_id := &iddepartamento;
-        v_nombre:= '&nombre';
-        v_localidad := '&localidad';   
-        select COUNT(DEPT_NO) into v_existe from DEPT --aqui vemos si existe o no y si insertamos el numero del dept que no existe 
-        --el cursor implicito nos devuelve un error porque el implicito siempre tiene que devolver una fila
-        where DEPT_NO= v_id;
-        if  (v_existe = 0) then 
-            dbms_output.put_line ('Insert');
-            insert into DEPT values (v_id, v_nombre, v_localidad);
-        else
-            dbms_output.put_line ('Update');
-            update DEPT set DNOMBRE=v_nombre, LOC= v_localidad
-                where DEPT_NO=v_id;
-        end if;
-end;
+
 
 
 --REALIZAR UN CODIGO PL/SQL PARA MODIFICAR EL SALARIO DEL

@@ -218,13 +218,80 @@ begin
 end;
 
 --3B)PROCEDIMIENTOS PARA DEVOLVER TODOS LOS DATOS EN UN CURSOR POR SALARIO
-PLANTILLA CON HOSPITAL
-DOCTOR CON HOSPITAL
+begin
+PK_VISTA_EMPLEADOS.TODOS_EMPLEADOS;
+PK_VISTA_EMPLEADOS.TODOS_EMPLEADOS_SALARIO(350000);
+end;
 
-select * from EMP;
-SELECT * FROM DEPT;
-select * from HOSPITAL;
-select * from PLANTILLA;
+--Necesitamos un paquete con procedimiento para modificar el salario de cada 
+--Doctor de forma individual.
+--La modificación de los datos de cada doctor será de forma aleatoria.
+--Debemos comprobar el Salario de cada Doctor para ajustar el número aleatorio 
+--del incremento.
+--1) Doctor con menos de 200.000: Incremento aleatorio de 500
+--2) Doctor entre de 200.000 y 300.000: Incremento aleatorio de 300
+--3) Doctor mayor a 300.000: Incremento aleatorio de 50
+--El incremento Random lo haremos con una función dentro del paquete.
+update doctor set salario = salario + dbms_random.value(1,50);
+select dbms_random.value(1,50) as aleatorio from DUAL;
 select * from DOCTOR;
 
-a
+--bloque pl/sql
+
+declare
+    cursor c_doctores is
+    select DOCTOR_NO, APELLIDO, SALARIO from DOCTOR;
+    v_random number;
+begin
+    
+    for v_doc in c_doctores
+     loop 
+     
+        select trunc(dbms_random.value(1,50)) into v_random from DUAL;
+         --queremos un incremento random por cada doctor
+         --vamos a modificar el salario de cada doctor
+         update DOCTOR set SALARIO= Salario + v_random
+         where DOCTOR_NO=v_doc.DOCTOR_NO;
+         dbms_output.put_line ('Doctor ' || v_doc.APELLIDO
+         || ' tiene un incremento de ' || v_random);
+    end loop;
+end;
+
+create or replace function random_doctor
+(p_iddoctor DOCTOR.DOCTOR_NO%TYPE)
+return number
+as
+    v_salario DOCTOR.SALARIO%TYPE;
+    v_random number;
+begin
+    select SALARIO into v_salario from DOCTOR
+    where DOCTOR_NO=p_iddoctor;
+    if (v_salario< 200000) then
+        v_random := trunc(dbms_random.value(1, 500));
+    if (v_salario> 300000) then
+        v_random := trunc(dbms_random.value (1,50));
+    else
+        v_random := trunc(dbms_random.value (1,300));
+    end if;
+    return v_random;
+end;
+
+---386 --> 500
+--522 --> 50
+
+select random_doctor(386) 
+
+--header
+create or replace package pk_doctores
+AS  
+    procedure incremento_random_doctores;
+    function function_random_doctores (p_iddoctor DOCTOR.DOCTOR_NO%TYPE)
+    return number;
+end pk_doctores;
+--body
+create or replace package pk_doctores
+AS  
+    procedure incremento_random_doctores;
+    function function_random_doctores (p_iddoctor DOCTOR.DOCTOR_NO%TYPE)
+    return number;
+end pk_doctores;
